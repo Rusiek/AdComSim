@@ -1,0 +1,660 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int N;
+string Tab[1000];
+long long Num[20], NumP[20];//Ile produktu i jaka potega
+long long Prod[20], ProdP[20];//Ile industry i jaka potega
+long long Com, ComP;
+long long Finder, FinderP;
+string Bonus;
+long long L, Bon, BonP;
+long long Poly[20], PolyP[20];
+
+void P(){//Done
+
+    int x=15;
+    Tab[1]="K";
+    Tab[2]="M";
+    Tab[3]="B";
+    Tab[4]="T";
+    Tab[5]="AA";
+    Tab[31]="AAA";
+    Tab[57]="AAAA";
+    Tab[83]="AAAAA";
+
+    x=5;
+    for (int i=1; i<26; ++i){//L2
+        ++x;
+        Tab[x]=Tab[x-1];
+        for (int j=0; j<2; ++j)
+            ++Tab[x][j];
+    }
+
+    ++x;
+    for (int i=1; i<26; ++i){//L3
+        ++x;
+        Tab[x]=Tab[x-1];
+        for (int j=0; j<3; ++j)
+            ++Tab[x][j];
+    }
+    Tab[41]="KFC";
+
+    ++x;
+    for (int i=1; i<26; ++i){//L4
+        ++x;
+        Tab[x]=Tab[x-1];
+        for (int j=0; j<4; ++j)
+            ++Tab[x][j];
+    }
+
+    ++x;
+    for (int i=1; i<26; ++i){//L5
+        ++x;
+        Tab[x]=Tab[x-1];
+        for (int j=0; j<5; ++j)
+            ++Tab[x][j];
+    }
+
+    //for (int i=0; i<100; ++i)
+        //cout<<3*i<<" "<<Tab[i]<<"\n";
+}
+
+void NumConvert(string A, int B){//Done
+    //Liczba
+    int C=0, i=0;
+    while((A[i]>='0'&&A[i]<='9')||A[i]=='.'){
+        if (A[i]=='.') ++i;
+        else{
+            C=(10*C)+(A[i]-'0');
+            ++i;
+        }
+    }
+    Num[B]=C;
+
+    //Potega
+    string D, E;
+    for (; i<A.size(); ++i){
+        E=A[i];
+        D+=E;
+    }
+
+    //Conv to int
+    for (int i=0; i<110; ++i)
+        if (D==Tab[i]){
+            NumP[B]=3*i;
+            break;
+        }
+
+    //Normalizuj
+    if (NumP[B]==0){
+        if (Num[B]<1000)
+            Num[B]*=100;
+        else{
+            Num[B]/=10;
+            NumP[B]=3;
+        }
+    }
+    //Check
+    //cout<<Num[B]<<" "<<NumP[B]<<"\n";
+}
+
+void ProdConvert(string A, int B){//Done
+    //Liczba
+    int C=0, i=0;
+    while((A[i]>='0'&&A[i]<='9')||A[i]=='.'){
+        if (A[i]=='.') ++i;
+        else{
+            C=(10*C)+(A[i]-'0');
+            ++i;
+        }
+    }
+    Prod[B]=C;
+
+    //Potega
+    string D, E;
+    for (; i<A.size(); ++i){
+        E=A[i];
+        D+=E;
+    }
+
+    //Conv to int
+    for (int i=0; i<110; ++i)
+        if (D==Tab[i]){
+            ProdP[B]=3*i;
+            break;
+        }
+
+    //Normalizuj
+    if (ProdP[B]==0){
+        if (Prod[B]<1000)
+            Prod[B]*=100;
+        else{
+            Prod[B]/=10;
+            ProdP[B]=3;
+        }
+    }
+
+    //To units per sec
+    if (ProdP[B]==NumP[B]){
+        Prod[B]=(Prod[B]/Num[B])*100;
+        ProdP[B]=0;
+    }
+    else{
+        Prod[B]=100000*Prod[B]/Num[B];
+        ProdP[B]=ProdP[B]-NumP[B]-3;
+    }
+
+    while (Prod[B]>=100000){
+        Prod[B]/=1000;
+        ProdP[B]+=3;
+    }
+    if (Prod[B]<100){
+        Prod[B]*=1000;
+        ProdP[B]-=3;
+    }
+
+    //Check
+    //cout<<Prod[B]<<" "<<ProdP[B]<<"\n";
+}
+
+void BonusConvert(string A){//Done
+    int C=0, i=0;
+    while((A[i]>='0'&&A[i]<='9')||A[i]=='.'){
+        if (A[i]=='.') ++i;
+        else{
+            C=(10*C)+(A[i]-'0');
+            ++i;
+        }
+    }
+    Bon=C;
+
+    //Potega
+    string D, E;
+    for (; i<A.size(); ++i){
+        E=A[i];
+        D+=E;
+    }
+
+    //Conv to int
+    for (int i=0; i<110; ++i)
+        if (D==Tab[i]){
+            BonP=3*i;
+            break;
+        }
+
+    //Normalizuj
+    if (BonP==0){
+        if (Bon<1000)
+            Bon*=100;
+        else{
+            Bon/=10;
+            BonP=3;
+        }
+    }
+    //Check
+    //cout<<B<<" "<<BP<<"\n";
+}
+
+long long TimeConvert(){//Done + subtitles unnecessary
+    string A;
+    cin>>A;
+    long long X=0, T=0;
+
+    for (int i=0; i<A.size(); ++i){
+        if (A[i]<='9'&&A[i]>='0')
+            X=(10*X)+(A[i]-'0');
+        else{
+            if (A[i]=='d'){
+                T+=X*86400;
+                X=0;
+            }
+            else if (A[i]=='h'){
+                T+=X*3600;
+                X=0;
+            }
+            else if (A[i]=='m'){
+                T+=X*60;
+                X=0;
+            }
+            else{
+                T+=X;
+                X=0;
+            }
+        }
+    }
+
+    return T;
+}
+
+void ComConvert(string A, long long B){//Done + subtitles
+    //Liczba
+    int C=0, i=0;
+    while((A[i]>='0'&&A[i]<='9')||A[i]=='.'){
+        if (A[i]=='.') ++i;
+        else{
+            C=(10*C)+(A[i]-'0');
+            ++i;
+        }
+    }
+    Com=C;
+
+    //Potega
+    string D, E;
+    for (; i<A.size(); ++i){
+        E=A[i];
+        D+=E;
+    }
+
+    //Conv to int
+    for (int i=0; i<110; ++i)
+        if (D==Tab[i]){
+            ComP=3*i;
+            break;
+        }
+
+    //Normalizuj
+    if (ComP==0){
+        if (Com<1000)
+            Com*=100;
+        else{
+            Com/=10;
+            ComP=3;
+        }
+    }
+
+    Com*=B;
+    while (Com>=100000){
+        Com/=1000;
+        ComP+=3;
+    }
+
+    if (ComP==0)
+        cout<<"You are supposed to get "<<Com/100<<" comrades\n";
+    else{
+        if (Com%100<10)
+            cout<<"You are supposed to get "<<Com/100<<".0"<<Com%100<<Tab[ComP/3]<<" comrades\n";
+        else cout<<"You are supposed to get "<<Com/100<<"."<<Com%100<<Tab[ComP/3]<<" comrades\n";
+    }
+}
+
+void FindConvert(string A){//Done?
+    //Liczba
+    int C=0, i=0;
+    while((A[i]>='0'&&A[i]<='9')||A[i]=='.'){
+        if (A[i]=='.') ++i;
+        else{
+            C=(10*C)+(A[i]-'0');
+            ++i;
+        }
+    }
+    Finder=C;
+
+    //Potega
+    string D, E;
+    for (; i<A.size(); ++i){
+        E=A[i];
+        D+=E;
+    }
+
+    //Conv to int
+    for (int i=0; i<110; ++i)
+        if (D==Tab[i]){
+            FinderP=3*i;
+            break;
+        }
+
+    //Normalizuj
+    if (FinderP==0){
+        if (Finder<1000)
+            Finder*=100;
+        else{
+            Finder/=10;
+            FinderP=3;
+        }
+    }
+}
+
+void GetData(){//Done
+    cout<<"Enter a number of industries: ";
+    cin>>N;
+    string B, C;
+    cout<<"Enter a number of resources: ";
+    cin>>B;
+    NumConvert(B,0);
+    for (int i=1; i<=N; ++i){
+        if (i==1)
+            cout<<"Enter a number of the 1st tier producers: ";
+        else if  (i==2)
+            cout<<"Enter a number of the 2nd tier producers: ";
+        else cout<<"Enter a number of the "<<i<<"rd tier producers: ";
+        cin>>B;
+
+        if (i==1)
+            cout<<"Enter how many resources per second that all 1st tier producer produce: ";
+        else if  (i==2)
+            cout<<"Enter how many resources per second that all 2nd tier producer produce: ";
+        else cout<<"Enter how many resources per second that all "<<i<<"rd tier producer produce: ";
+        cin>>C;
+
+        NumConvert(B,i);
+        ProdConvert(C,i);
+        //cout<<Num[i]<<" "<<NumP[i]<<"  "<<Prod[i]<<" "<<ProdP[i]<<"\n";
+    }
+
+    cout<<"Enter the luck value: ";
+    cin>>L;
+    cout<<"Enter the bonus value: ";
+    cin>>Bonus;
+    BonusConvert(Bonus);
+    //cout<<Bon<<" "<<BonP<<"\n";
+}
+
+pair<long long, long long> CountPoly(long long T, bool K){//Done
+
+    for (int i=0; i<=N; ++i){
+        Poly[i]=0; PolyP[i]=0;}
+    long long Odp=0, OdpP=0;
+
+    for (int i=0; i<=N; ++i){
+        Poly[i]=Num[i];
+        PolyP[i]=NumP[i];
+
+        for (int j=1; j<=i; ++j){//Wspolczynnik
+            Poly[i]*=Prod[j];
+            PolyP[i]+=ProdP[j];
+            Poly[i]/=j;
+            Poly[i]/=100;
+            if (Poly[i]<100){
+                Poly[i]*=1000;
+                PolyP[i]-=3;
+            }
+            while (Poly[i]>=100000){
+                Poly[i]/=1000;
+                PolyP[i]+=3;
+            }
+        }
+
+        //cout<<i<<": "<<Poly[i]<<" "<<PolyP[i]<<"\n";
+
+        for (int j=0; j<i; ++j){//Czas
+            Poly[i]*=T;
+            while (Poly[i]>=100000){
+                Poly[i]/=1000;
+                PolyP[i]+=3;
+            }
+            //cout<<i<<": "<<Poly[i]<<" "<<PolyP[i]<<"\n";
+            if (BonP>=6){
+                Poly[i]=Poly[i]*L*Bon/10000;
+                PolyP[i]+=BonP;
+            }
+            else{
+                if (BonP==3)
+                    Poly[i]=Poly[i]*(100-L+(L*Bon*10))/100;
+                else
+                    Poly[i]=Poly[i]*(100-L+(L*Bon/100))/100;
+            }
+
+            while (Poly[i]>=100000){
+                Poly[i]/=1000;
+                PolyP[i]+=3;
+            }
+        }
+
+        //cout<<i<<": "<<Poly[i]<<" "<<PolyP[i]<<"\n";
+
+        if (PolyP[i]>OdpP){//Sprawdz max
+            OdpP=PolyP[i];
+            Odp=Poly[i];
+        }
+        else if (PolyP[i]==OdpP){
+            Odp+=Poly[i];
+            while (Odp>=100000){
+                Odp/=1000;
+                OdpP+=3;
+            }
+        }
+        else if (PolyP[i]==OdpP-3){
+            Odp+=Poly[i]/1000;
+            while (Odp>=100000){
+                Odp/=1000;
+                OdpP+=3;
+            }
+        }
+    }
+    if (K==true){
+        if (Odp%100<10)
+            cout<<Odp/100<<".0"<<Odp%100<<" "<<Tab[OdpP/3]<<"\n";
+        else cout<<Odp/100<<"."<<Odp%100<<" "<<Tab[OdpP/3]<<"\n";
+    }
+    return make_pair(Odp, OdpP);
+}
+
+int main()
+{
+    P();
+    GetData();
+    while(true)
+    {
+        string X;
+        cout<<"Menu: \n";
+        cout<<"1. Enter data again\n";
+        cout<<"2. Comrade calculator\n";
+        cout<<"3. Count resources after time\n";
+        cout<<"4. How long will it take?\n";
+        cout<<"5. Card upgrade\n";
+        cout<<"Q. Exit\n";
+        cin>>X;
+        if (X=="1")//Done in 100%
+            GetData();
+        else if (X=="2"){//Done in 100%
+            string Com;
+            cout<<"Enter a number of Comrades per second: ";
+            cin>>Com;
+            cout<<"Enter how long you want to wait: ";
+            ComConvert(Com, TimeConvert());
+        }
+        else if (X=="3"){//Done
+            cout<<"How long do you want to wait?: \n";
+            CountPoly(TimeConvert(), true);
+        }
+        else if (X=="4"){
+            cout<<"Enter the number of resources you want to get: ";
+            string A;
+            long long s=1, m=1, e=1;
+            bool Tr=false;
+            cin>>A;
+            FindConvert(A);
+            for (int i=0; i<=34; ++i){//Done
+                if (CountPoly(e, false).second<FinderP)
+                    e*=2;
+                else if (CountPoly(e, false).second==FinderP){
+                    if (CountPoly(e, false).first<Finder)
+                        e*=2;
+                    else{
+                        Tr=true;
+                        break;
+                    }
+
+                }
+                else{
+                    Tr=true;
+                    break;
+                }
+            }
+
+            if (Tr==false)
+                cout<<"It would take over 100 years!\n";
+            else{
+                cout<<s<<" "<<m<<" "<<e<<"\n";
+                m=(s+e)/2;
+                while (s<e){
+                    if (CountPoly(m, false).second<FinderP){
+                        s=m+1;
+                        m=(s+e)/2;
+                    }
+                    else if (CountPoly(m, false).second>FinderP){
+                        e=m;
+                        m=(s+e)/2;
+                    }
+                    else{
+                        if (CountPoly(m, false).first<Finder){
+                            s=m+1;
+                            m=(s+e)/2;
+                        }
+                        else if (CountPoly(m, false).second>Finder){
+                            e=m;
+                            m=(s+e)/2;
+                        }
+                        else break;
+                    }
+                }
+                cout<<m<<"\n";
+            }
+        }
+        else if (X=="5"){//Done
+            cout<<"1. Power/Speed\n";
+            cout<<"2. Luck\n";
+            cout<<"3. Bonus\n";
+            cin>>X;
+            if (X=="1"){//Done
+                cout<<"1. Global upgrade\n";
+                cout<<"2. Unit upgrade\n";
+                cin>>X;
+                cout<<"Insert value of multipler: ";
+                long long Y;
+                cin>>Y;
+                if (X=="1"){//Global
+                    if (Y>0)
+                        for (int i=1; i<=N; ++i){
+                            Prod[i]*=Y;
+                            if (Prod[i]>=100000){
+                                Prod[i]/=1000;
+                                ProdP[i]+=3;
+                            }
+                        }
+                    else if (Y==0)
+                        cout<<"Wrong input!\n";
+                    else
+                        for (int i=1; i<=N; ++i){
+                            Prod[i]*=Y;
+                            if (Prod[i]<100){
+                                Prod[i]*=1000;
+                                ProdP[i]-=3;
+                            }
+                        }
+
+
+                }
+                else{//Unit
+                    cout<<"Insert industry level you want to upgrade: \n";
+                    long long Z;
+                    cin>>Z;
+                    if (Z>N||Z<1)
+                        cout<<"Wrong input!\n";
+                    else{
+                        if (Y>0)
+                            Prod[Z]*=Y;
+                            if (Prod[Z]>=100000){
+                                Prod[Z]/=1000;
+                                ProdP[Z]+=3;
+                            }
+                        else if (Y==0)
+                            cout<<"Wrong input!\n";
+                        else
+                            Prod[Z]*=Y;
+                            if (Prod[Z]<100){
+                                Prod[Z]*=1000;
+                                ProdP[Z]-=3;
+                            }
+                    }
+                }
+            }
+            else if (X=="2"){//Done
+                cout<<"Insert value you want to add: ";
+                long long Y;
+                cin>>Y;
+                L+=Y;
+            }
+            else if (X=="3"){//Done
+                cout<<"Insert multipler: \n";
+                long long Y;
+                cin>>Y;
+                if (Y>0){
+                    Bon*=Y;
+                    if (Bon>=100000){
+                        Bon/=1000;
+                        BonP+=3;
+                    }
+                }
+                else if (Y==0)
+                    cout<<"Wrong input!\n";
+                else{
+                    Bon/=Y;
+                    if (Bon<100){
+                        Bon*=1000;
+                        BonP-=3;
+                    }
+                }
+            }
+            else cout<<"Wrong input!\n";
+        }
+        else if (X=="Q"||X=="q"||X=="Exit"||X=="Quit")
+            break;
+        else cout<<"Wrong input!\n";
+    }
+
+
+    return 0;
+}
+/*
+//By hand
+19:15
+6
+77.80FFF
+140.60YY 6.34CCC
+5.73TT 32.07VV
+730.63NN 1.14QQ
+137.45II 120.16KK
+34.17DD 16.42FF
+4.77B 2.50AA
+57 524.28K
+Check 19:20     Real value:  78.59FFF    Output:  78.36FFF      ~ 0.29%
+Check 19:30     Real value:  79.70FFF    Output:  79.55FFF      ~ 0.19%
+Check 19:45     Real value:  81.62FFF    Output:  81.40FFF      ~ 0.27%
+Check 20:00     Real value:  83.62FFF    Output:  83.38FFF      ~ 0.29%
+Check 21:00     Real value:  94.10FFF    Output:  92.58FFF      ~ 1.62%
+Check 22:00     Real value: 106.68FFF    Output: 104.19FFF      ~ 2.33%
+-210.41FFF
+-4.38FF
+Check 24:00     Real value: 142.59FFF    Output: 136.77FFF      ~ 4.08%
+Check 01:30     Real value: 184.51FFF    Output: 172.01FFF      ~ 6.77%
+Check 12:00     Real value: xxx.xxFFF    Output:   1.01GGG      ~
+
+//SS
+20:58
+6
+93.85FFF
+218.16YY 9.83CCC
+8.36TT 46.77VV
+989.03NN 1.55QQ
+170.66II 149.12KK
+38.79DD 18.64FF
+4.77B 2.50AA
+57 524.28K
+Check 21:15     Real value:  96.90FFF    Output:  96.93FFF      ~ 0.03%
+Check 21:30     Real value:  99.88FFF    Output:  99.83FFF      ~ 0.05%
+Check 22:00     Real value: 106.68FFF    Output: 106.12FFF      ~ 0.52%
+Check 23:10     Real value: 126.21FFF    Output: 123.87FFF      ~ 1.85%
+-210.41FFF
+-4.38FFF
+Check 24:00     Real value: 142.59FFF    Output: 139.56FFF      ~ 2.12%
+Check 01:30     Real value: 184.51FFF    Output: 175.62FFF      ~ 4.82%
+Check 12:00     Real value:  xx.xxFFF    Output:   1.03GGG      ~
+
+3
+105.93KK 26.15GG 156.93II 5.89CC 29.49EE 7.03B 4.92AA 60 256
+305.11KK 13:02
+1.87PP 2nd
+or 190+1870 stations
+*/
